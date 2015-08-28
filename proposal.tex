@@ -1,0 +1,189 @@
+\section{Proposal}
+
+We propose a new standard attribute to introduce an attribute namespace
+into the global scope.
+
+\begin{lstlisting}
+// Current situation
+void f() {
+  [[rpr::kernel, rpr::target(cpu,gpu)]]
+  do_task();
+}
+
+// Proposed change
+void g() {
+  [[using(rpr), kernel, target(cpu,gpu)]]
+  do_task();
+}
+\end{lstlisting}
+
+In this paper we have named the porposed attribute \cppkey{using}. However,
+this choice is for exposition only and a different name could be used.
+
+\subsection{Effect of the using attribute}
+
+The effect of a \cppid{using} attribute is to introduce all the attributes
+names from a spacific attribute namespace to the global attribute namespace.
+Thus, after a \cppid{using} attribute, all the attributes from that namespace
+can used without explicit mention to the namespace.
+
+\begin{lstlisting}
+void g() {
+  [[using(rpr), kernel]] // equivalent to [[rpr::kernel]]
+  do_task();
+\end{lstlisting}
+
+As a generalization, it should be possible to introduce multiple attribute
+namespaces in a single attribute specifier.
+
+\begin{lstlisting}
+void g() {
+  [[using(rpr,optimization), kernel, unroll(4)]]
+  for (int i=0; i<max; ++i) {
+    do_task(i);
+  }
+}
+\end{lstlisting}
+
+\subsection{Name lookup}
+
+The introduction of the \cppkey{using} attribute requires additional
+rules when an attribute specifier is seen. The question that needs to
+be answered is how an attribute name is resolved.
+
+If an attribute specifier contains a non-scoped attribute name, it is
+first checked against the list of standard attributes. If it is found,
+the attribute lookup is finished.
+
+If a non-scoped attribute is a non-standard attribute, it is checked
+against the attribute name lists of all the attribute namespaces that have been
+introduced through an \cppkey{using} attribute. The outcome of this process
+could be one of the following:
+
+\begin{enumerate}
+
+\item The lookup produces exactly one match. The program is considered
+to be well formed.
+
+\item The lookup produces more than one match in differente attribute namespaces.
+The program is considered to be ill-formed.
+
+\item The lookup produces zero matches. The attribute is ignored and the
+program is wll-formed, although a diagnostic may be optionally emitted.
+
+\end{enumerate}
+
+\subsection{Scope of the using attribute}
+
+There are several design alternative on the effect of a \cppid{using}
+attribute in terms of scoping:
+
+\begin{itemize}
+
+\item Effect within the current attribute specifier.
+\item Effect until the end of the current translation unit.
+\item Effect within the current scope.
+
+\end{itemize}
+
+\subsubsection{Sequence specifier scope}
+
+The simplest implementation is to make effect of a \cppid{using} attribute
+limited to the current sequence specifier.
+
+\begin{lstlisting}
+void f(X & x) {
+  [[rpr::kernel, rpr::target(gpu), rpr::out(x)]] g1(x); // OK
+  [[using(rpr), kernel, target(gpu), out(x)]] g2(x); // OK
+  [[using(rpr), kernel]] [[target(gpu)]] g3(x); // Wrong. Target in different attr-specifier
+}
+\end{lstlisting}
+
+This option is simple to implement and provides some usefulness to the original
+problem. For illustration we reproduce here our original pipeline example.
+
+\begin{lstlisting}
+void f() {
+  [[using(rpr), pipeline(bound, 8, blocking), stream(A,B)]]
+  for (int i=0; i<iterations; ++i) {
+    [[using(rpr), kernel, out(a), target(cpu) ]]
+    a = get_value();
+    
+    [[using(rpr), farm(4,ordered), in(A,C), out(A,B), target(cpu,gpu)]]
+    for (int j=0;j<max;++j) {
+      b = f(a,c);
+    }
+
+    [[using(rpr), kernel, in(A,B)]]
+    g(a,b);
+  }
+}
+\end{lstlisting}
+
+This option makes easier to use multiple attributes from the same attribute
+namespace. However, we still need to start with \cppkey{using} every attribute
+specifier.
+
+\subsubsection{Translation unit scope}
+
+A second option, is that a \cppkey{using} attribute has effect from the point
+in the source code where it is located to the end of the current translation unit.
+
+This would allow to state a \cppkey{using} specifier only once.
+
+\begin{lstlisting}
+void f() {
+  [[using(rpr)]]
+  [[kernel,target(cpu)]] do_task1(); //rpr::kernel, rpr::target
+  [[kernel,target(gpu),out(a)]] // rpr::kernel, rpr::target, rpr::out 
+  for (int i=0; i<max; ++i) {
+    a[i]=do_task2();
+  }
+}
+\end{lstlisting}
+
+However, there ara several cases where the user could be easily surprised.
+
+\begin{lstlisting}
+void f() {
+  [[using(rpr), kernel, target(cpu)]] // rpr::kernel, rpr::target
+  do_task1();
+}
+
+void g() {
+  [[kernel]]
+  do_task3(); //rpr::kernel?
+}
+\end{lstlisting}
+
+This situation could be made much worse by inserting \cppkey{using} attributes
+in header files (e.g. inside an \cppkey{inline} funcion). Consequently, we
+do not recommend this second alternative.
+
+\subsubsection{Current scope}
+
+A third option would be to use regular scoping rules for C++ lookup. That is
+a \cppkey{using} attribute has effect from its point of use until the end of
+the current scope.
+
+\begin{lstlisting}
+void f() {
+  [[using(rpr), kernel, target(cpu)]] // rpr::kernel, rpr::target
+  do_task1();
+}
+
+void g() {
+  [[kernel]]
+  do_task3(); // rpr::kernel not found!
+}
+\end{lstlisting}
+
+We think this is the mos advisable solution. However, we recognize that it introduces
+additional complexities as it makes necessary to mix regular namespace management
+with attribute namespace management. Specific cases where complexities could arise
+are attributes in namespace scope or even in the global scope.
+
+One limited version of this approach could be to allow scope based \cppkey{using}
+attributes at function body scope.
+
+However for the sake of simplicity, we recommend the first option (sequence specifier scope).
