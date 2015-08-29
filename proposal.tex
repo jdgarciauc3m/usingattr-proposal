@@ -187,3 +187,21 @@ One limited version of this approach could be to allow scope based \cppkey{using
 attributes at function body scope.
 
 However for the sake of simplicity, we recommend the first option (sequence specifier scope).
+
+\subsection{Why a standard attribute?}
+
+It could be argued that if an extension needs an attribute as \cppkey{using} it could add
+as part of the extension.
+
+\begin{lstlisting}
+void f() {
+  [[rpr::using, kernel, target(cpu)]] // rpr::kernel, rpr::cpu
+  do_task1();
+}
+\end{lstlisting}
+
+However, this would be a non conforming extension as an implementation could see those
+unknown attributes in the global namespace.
+
+Besides, we think that the proposed \cppkey{using} attribute could be of utility to
+multiple extensions.
