@@ -17,13 +17,13 @@ void g() {
 }
 \end{lstlisting}
 
-In this paper we have named the porposed attribute \cppkey{using}. However,
+In this paper we have named the proposed attribute \cppkey{using}. However,
 this choice is for exposition only and a different name could be used.
 
 \subsection{Effect of the using attribute}
 
 The effect of a \cppid{using} attribute is to introduce all the attributes
-names from a spacific attribute namespace to the global attribute namespace.
+names from a specific attribute namespace to the global attribute namespace.
 Thus, after a \cppid{using} attribute, all the attributes from that namespace
 can used without explicit mention to the namespace.
 
@@ -65,11 +65,11 @@ could be one of the following:
 \item The lookup produces exactly one match. The program is considered
 to be well formed.
 
-\item The lookup produces more than one match in differente attribute namespaces.
+\item The lookup produces more than one match in different attribute namespaces.
 The program is considered to be ill-formed.
 
 \item The lookup produces zero matches. The attribute is ignored and the
-program is wll-formed, although a diagnostic may be optionally emitted.
+program is well-formed, although a diagnostic may be optionally emitted.
 
 \end{enumerate}
 
@@ -142,7 +142,7 @@ void f() {
 }
 \end{lstlisting}
 
-However, there ara several cases where the user could be easily surprised.
+However, there are several cases where the user could be easily surprised.
 
 \begin{lstlisting}
 void f() {
@@ -157,7 +157,7 @@ void g() {
 \end{lstlisting}
 
 This situation could be made much worse by inserting \cppkey{using} attributes
-in header files (e.g. inside an \cppkey{inline} funcion). Consequently, we
+in header files (e.g. inside an \cppkey{inline} function). Consequently, we
 do not recommend this second alternative.
 
 \subsubsection{Current scope}
