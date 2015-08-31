@@ -66,8 +66,7 @@ could be one of the following:
 to be well formed.
 
 \item The lookup produces more than one match in different attribute namespaces.
-The program is considered to be ill-formed.
-%% could this also be implementation defined, since anything is implementation defined anyway. E.g., one tool might use rpr while a compiler might use omp and both might have the same attribute with similar enough semantics. What if the standard later defines attributes which names are used in a namespace that using attribute uses. Thus arbitrary programs can be made ill-formed by standardizing a new attribute. Just consider Massimo's rpr::using and this proposal.
+The effect, in this this case, is implementation defined
 
 \item The lookup produces zero matches. The attribute is ignored and the
 program is well-formed, although a diagnostic may be optionally emitted.
