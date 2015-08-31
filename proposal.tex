@@ -1,7 +1,7 @@
 \section{Proposal}
 
 We propose a new standard attribute to introduce an attribute namespace
-into the global scope.
+into the global scope for attributes. Other scoping options are discussed in section \ref{scoping}.
 
 \begin{lstlisting}
 // Current situation
@@ -17,7 +17,7 @@ void g() {
 }
 \end{lstlisting}
 
-In this paper we have named the proposed attribute \cppkey{using}. However,
+In this paper we have named the proposed attribute \cppkey{using} for the similarity to using directives. However,
 this choice is for exposition only and a different name could be used.
 
 \subsection{Effect of the using attribute}
@@ -67,6 +67,7 @@ to be well formed.
 
 \item The lookup produces more than one match in different attribute namespaces.
 The program is considered to be ill-formed.
+%% could this also be implementation defined, since anything is implementation defined anyway. E.g., one tool might use rpr while a compiler might use omp and both might have the same attribute with similar enough semantics. What if the standard later defines attributes which names are used in a namespace that using attribute uses. Thus arbitrary programs can be made ill-formed by standardizing a new attribute. Just consider Massimo's rpr::using and this proposal.
 
 \item The lookup produces zero matches. The attribute is ignored and the
 program is well-formed, although a diagnostic may be optionally emitted.
@@ -74,8 +75,9 @@ program is well-formed, although a diagnostic may be optionally emitted.
 \end{enumerate}
 
 \subsection{Scope of the using attribute}
+\label{scoping}
 
-There are several design alternative on the effect of a \cppid{using}
+There are several design alternatives on the effect of a \cppid{using}
 attribute in terms of scoping:
 
 \begin{itemize}
@@ -178,15 +180,17 @@ void g() {
 }
 \end{lstlisting}
 
-We think this is the mos advisable solution. However, we recognize that it introduces
+We think this is the most advisable solution. However, we recognize that it introduces
 additional complexities as it makes necessary to mix regular namespace management
 with attribute namespace management. Specific cases where complexities could arise
-are attributes in namespace scope or even in the global scope.
+are attributes in namespace scope or even in the global scope 
+which are unavoidable when function definitions are attributed.
 
 One limited version of this approach could be to allow scope based \cppkey{using}
-attributes at function body scope.
+attributes at function body scope only.
 
 However for the sake of simplicity, we recommend the first option (sequence specifier scope).
+%% this is a contradiction to the 3 introduction
 
 \subsection{Why a standard attribute?}
 
@@ -204,4 +208,4 @@ However, this would be a non conforming extension as an implementation could see
 unknown attributes in the global namespace.
 
 Besides, we think that the proposed \cppkey{using} attribute could be of utility to
-multiple extensions.
+multiple implementations defining several attributes in the same namespace.

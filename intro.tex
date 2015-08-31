@@ -6,12 +6,12 @@ in order to avoid the need of repetitive use of attributes namespaces.
 Attributes~\cite{n2761} provide a useful way to add annotations to source code with
 implementation defined effects. Implementations are expected to add their
 own attribute namespace where their attributes are defined. In fact,
-scoped attributes (those under a specific namespace) are specified
+scoped attributes--those under a specific namespace--are specified
 as conditionally supported. While this approach
 provides a clean way for different implementations to add their own attributes,
 it may lead to very verbose code.
 
 To better support the introduction of conditionally supported attributes we
-propose the introduction of a new standardized attributes (the \cppkey{using} attribute)
+propose the introduction of a new standard attribute, the \cppkey{using} attribute,
 to avoid repetition of attribute namespaces when making extensive use
 of attributes to perform code annotations.
