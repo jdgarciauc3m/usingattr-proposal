@@ -1,0 +1,143 @@
+\begin{frame}[t,fragile]{Proposal}
+\begin{itemize}
+  \item New attribute to introduce an attribute namespace.
+    \begin{itemize}
+      \item Alternatives on scoping later.
+    \end{itemize}
+\end{itemize}
+
+\vfill
+\begin{lstlisting}
+// Current situation
+void f() {
+  [[rpr::kernel, rpr::target(cpu,gpu)]]
+  do_task();
+}
+
+// Proposed change
+void g() {
+  [[using(rpr), kernel, target(cpu,gpu)]]
+  do_task();
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[t]{Some bikeshedding?}
+\begin{itemize}
+  \item \cppkey{using}
+  \item \cppkey{with}
+  \item \cppkey{namespace}
+  \item \cppkey{put\_your\_bikeshed\_here}
+  \item \ldots
+\end{itemize}
+\end{frame}
+
+\begin{frame}[t,fragile]{Effects}
+\begin{itemize}
+  \item The effect of a \cppid{using} attribute is to introduce all the attributes
+        names from a specific attribute namespace to the global attribute namespace.
+    \begin{itemize}
+      \item All the attributes from that namespace
+            can used without explicit mention to the namespace.
+    \end{itemize}
+\end{itemize}
+
+\begin{lstlisting}
+void g() {
+  [[using(rpr), kernel]] // equivalent to [[rpr::kernel]]
+  do_task();
+
+  // ...
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[t,fragile]{Optional generalization}
+\begin{itemize}
+  \item It could be possible to introduce multiple attribute
+        namespaces in a single attribute specifier.
+\end{itemize}
+\vfill
+\begin{lstlisting}
+void g() {
+  [[using(rpr,optimization), kernel, unroll(4)]]
+  for (int i=0; i<max; ++i) {
+    do_task(i);
+  }
+}
+\end{lstlisting}
+\vfill
+\begin{itemize}
+  \item I am not proposing this.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[t,shrink]{Lookup}
+\begin{itemize}
+  \item Need rules to decide whe an attribute specifier is seen to resolve.
+\end{itemize}
+\vfill
+\begin{itemize}
+  \item If an attribute specifier contains a non-scoped attribute name.
+    \begin{enumerate}[1]
+      \item Check against list of standard attributes.
+      \item Check against valid attributes in attribute namespace brought to scope.
+    \end{enumerate}
+  \item Outcome:
+    \begin{enumerate}[a)]
+      \item The lookup produces exactly one match. The program is considered
+      to be well formed.
+      
+      \item The lookup produces more than one match in different attribute namespaces.
+      The effect, in this this case, is implementation defined
+      
+      \item The lookup produces zero matches. The attribute is ignored and the
+      program is well-formed, although a diagnostic may be optionally emitted.
+    \end{enumerate}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[t]{Scope of the using attribute}
+\begin{itemize}
+  \item Multiple design alternatives:
+    \begin{enumerate}[1.]
+      \item Effect restricted to the current attribute specifier. \alert{Preferred}
+      \item Effect until the end of the current translation unit.
+      \item Effect restricted to the current scope.
+    \end{enumerate}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[t,fragile]{Sequence specifier scope}
+\begin{lstlisting}
+void f(X & x) {
+  [[rpr::kernel, rpr::target(gpu), rpr::out(x)]] g1(x); // OK
+  [[using(rpr), kernel, target(gpu), out(x)]] g2(x); // OK
+  [[using(rpr), kernel]] [[target(gpu)]] g3(x); // Wrong. Target in different attr-specifier
+}
+\end{lstlisting}
+
+\begin{itemize}
+  \item Option is simple to implement.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[t,fragile]{Original example}
+\begin{lstlisting}
+void f() {
+  [[using(rpr), pipeline(bound, 8, blocking), stream(A,B)]]
+  for (int i=0; i<iterations; ++i) {
+    [[using(rpr), kernel, out(a), target(cpu) ]]
+    a = get_value();
+    
+    [[using(rpr), farm(4,ordered), in(A,C), out(A,B), target(cpu,gpu)]]
+    for (int j=0;j<max;++j) {
+      b = f(a,c);
+    }
+
+    [[using(rpr), kernel, in(A,B)]]
+    g(a,b);
+  }
+}
+\end{lstlisting}
+\end{frame}
