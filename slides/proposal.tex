@@ -24,10 +24,10 @@ void g() {
 
 \begin{frame}[t]{Some bikeshedding?}
 \begin{itemize}
-  \item \cppkey{using}
-  \item \cppkey{with}
-  \item \cppkey{namespace}
-  \item \cppkey{put\_your\_bikeshed\_here}
+  \item \cppkey{[[using(something)]]}
+  \item \cppkey{[[with(something)]]}
+  \item \cppkey{[[namespace(something)]]}
+  \item \cppkey{[[put\_your\_bikeshed\_here(something)]]}
   \item \ldots
 \end{itemize}
 \end{frame}
@@ -54,7 +54,7 @@ void g() {
 
 \begin{frame}[t,fragile]{Optional generalization}
 \begin{itemize}
-  \item It could be possible to introduce multiple attribute
+  \item It could be possible to eventually introduce multiple attribute
         namespaces in a single attribute specifier.
 \end{itemize}
 \vfill
@@ -68,21 +68,23 @@ void g() {
 \end{lstlisting}
 \vfill
 \begin{itemize}
-  \item I am not proposing this.
+  \item \alert{I am not proposing this!}
 \end{itemize}
 \end{frame}
 
 \begin{frame}[t,shrink]{Lookup}
 \begin{itemize}
-  \item Need rules to decide whe an attribute specifier is seen to resolve.
+  \item Need rules to decide when an attribute specifier is seen to resolve the namespace
+        it belongs to.
 \end{itemize}
-\vfill
+\vfill\pause
 \begin{itemize}
   \item If an attribute specifier contains a non-scoped attribute name.
     \begin{enumerate}[1]
       \item Check against list of standard attributes.
       \item Check against valid attributes in attribute namespace brought to scope.
     \end{enumerate}
+  \pause
   \item Outcome:
     \begin{enumerate}[a)]
       \item The lookup produces exactly one match. The program is considered
@@ -93,6 +95,9 @@ void g() {
       
       \item The lookup produces zero matches. The attribute is ignored and the
       program is well-formed, although a diagnostic may be optionally emitted.
+        \begin{itemize}
+          \item Alternatively, implementation defined.
+        \end{itemize}
     \end{enumerate}
 \end{itemize}
 \end{frame}
@@ -112,8 +117,11 @@ void g() {
 \begin{lstlisting}
 void f(X & x) {
   [[rpr::kernel, rpr::target(gpu), rpr::out(x)]] g1(x); // OK
+
   [[using(rpr), kernel, target(gpu), out(x)]] g2(x); // OK
-  [[using(rpr), kernel]] [[target(gpu)]] g3(x); // Wrong. Target in different attr-specifier
+
+  // Wrong. Target in different attr-specifier
+  [[using(rpr), kernel]] [[target(gpu)]] g3(x); 
 }
 \end{lstlisting}
 
@@ -123,7 +131,7 @@ void f(X & x) {
 \end{frame}
 
 \begin{frame}[t,fragile]{Original example}
-\begin{lstlisting}
+\begin{lstlisting}[basicstyle=\footnotesize]
 void f() {
   [[using(rpr), pipeline(bound, 8, blocking), stream(A,B)]]
   for (int i=0; i<iterations; ++i) {
