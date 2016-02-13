@@ -1,0 +1,75 @@
+\section{Proposal}
+
+We propose a new attribute namespace introducer, to introduce an attribute
+namespace in the current attribute specifier.
+
+\begin{lstlisting}
+// Current situation
+void f() {
+  [[rpr::kernel, rpr::target(cpu,gpu)]]
+  do_task();
+}
+
+// Proposed change
+void g() {
+  [[using rpr: kernel, target(cpu,gpu)]]
+  do_task();
+}
+\end{lstlisting}
+
+In this paper we have named the proposed introducer \cppkey{using} for the similarity to using directives. However,
+this choice is for exposition only and a different name could be used.
+
+\subsection{Effect of the using introducer}
+
+The effect of a \cppid{using} introducer is to introduce all the attributes
+names from a specific attribute namespace into the global attribute namespace.
+Thus, after a \cppid{using} attribute, all the attributes from that namespace
+can used without explicit mention to the namespace.
+
+\begin{lstlisting}
+void g() {
+  [[using rpr: kernel]] // equivalent to [[rpr::kernel]]
+  do_task();
+\end{lstlisting}
+
+\subsection{Name lookup}
+
+The introduction of the \cppkey{using} introducer requires additional
+rules when an attribute specifier is seen. 
+
+If an attribute specifier contains a non-scoped attribute name, it is
+first checked against the list of standard attributes. If it is found,
+the attribute lookup is finished.
+
+If a non-scoped attribute is a non-standard attribute, it is checked
+against the attribute name lists of all the attribute namespaces that have been
+introduced through an \cppkey{using} introducer. The outcome of this process
+could be one of the following:
+
+\begin{enumerate}
+
+\item The lookup produces exactly one match. The program is considered
+to be well formed.
+
+\item The lookup produces more than one match in different attribute namespaces.
+The effect, in this this case, is implementation defined
+
+\item The lookup produces zero matches. The attribute is ignored and the
+program is well-formed, although a diagnostic may be optionally issued.
+
+\end{enumerate}
+
+\subsection{Scope of the using introducer}
+\label{scoping}
+
+The effect of a \cppid{using} introducer is limited to the attribute list
+where it appears.
+
+\begin{lstlisting}
+void f(X & x) {
+  [[rpr::kernel, rpr::target(gpu), rpr::out(x)]] g1(x); // OK
+  [[using rpr: kernel, target(gpu), out(x)]] g2(x); // OK
+  [[using rpr: kernel]] [[target(gpu)]] g3(x); // Wrong. Target in different attr-list
+}
+\end{lstlisting}
