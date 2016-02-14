@@ -1,0 +1,40 @@
+\section{Proposal}
+
+This paper proposes possible solutions for the previously identified problems
+
+\subsection{Handling unknown attribute namespaces}
+
+Having scoped attributes as conditionally supported provides the degree of
+freedom that allows an implementation not to support a specific attribute namespace.
+However, this is not enough to clarify what are the valid options for an
+implementation when it finds an attribute namespace it does not know about.
+
+This paper proposes to add the following:
+
+\vspace{1em}
+\emph{All occurrences of an attribute namespace that is not conditionally supported
+by the implementation will be ignored}.
+
+\subsection{Non standard unqualified attributes}
+
+The current wording of 7.6.1/5 makes all unqualified attributes that are not defined
+in the standard as implementation defined. This allows implementations to add new
+attributes to the global namespace.
+
+As it has been mentioned above implementations do already make use of this clause
+to define their own attributes in the global namespace. This paper proposes
+to deprecate that use by changing the clause and adding additional rules.
+
+This paper proposes to modify 7.6.1/5 as follows:
+
+\vspace{1em}
+\emph{Any occurrence of an attribute-token not specified in this International
+Standard is deprecated}.
+\vspace{1em}
+
+This paper also proposes to add the following:
+
+\vspace{1em}
+\emph{For an attribute-scoped-token not specified in this International
+Standard, the behavior is implementation-defined.}
+

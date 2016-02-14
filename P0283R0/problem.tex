@@ -1,0 +1,39 @@
+\section{Problem}
+
+Attributes have proved to be a very useful way to perform
+source code annotations. However to increase their use some
+issues need to be better clarified.
+
+\subsection{Handling unknown attribute namespaces}
+
+During the committee meeting at Kona it was pointed out that \emph{``We don't
+have a requirement that implementations ignore attribute namespaces that they
+do not understand. So my users hide attributes behind macros''}. This is something
+that needs to be clarified in order to avoid attributes being hidden by macros.
+
+Currently, the standard states in 7.6.1/3 that \emph{``The use of an
+attribute-scoped-token is conditionally-supported, with implementation-defined
+behavior''}. Making namespaced attributes conditionally supported means that
+they will not be understood by implementations that do not cover that namespace.
+
+\subsection{Non standard qualified attributes}
+
+Currently, the standard states in 7.6.1/5 that \emph{``For an attribute-token
+not specified in this International Standard, the behavior is
+implementation-defined''}. However this wording (combined with namespaces being
+conditionally supported) has resulted in implementations adding a number of
+non-standard attributes as extensions.
+
+For example, clang/llvm includes the following: 
+
+\begin{tabular}{llll}
+\cppid{CarriesDependency} & \cppid{CXX11NoReturn} & \cppid{Deprecated} & \cppid{FallThrough} \\
+\cppid{DisableTailCalls} & \cppid{NoDuplicate} & \cppid{NotTailCalled} & \cppid{OptimizeNone} \\
+\cppid{TypeVisibility} & \cppid{WarnUnusedResult}  & \cppid{NoSanitize} & \cppid{Capability} \\
+\cppid{AssertCapability} & \cppid{AcquireCapability} & \cppid{TryAcquireCapability} & \cppid{ReleaseCapability} \\
+\cppid{RequiresCapability} & \cppid{InternalLinkage} & & \\
+\end{tabular}
+
+In general, the current status quo favors the fact that different implementations
+pollute the global namespace with non-standard attributes in different ways, making
+very difficult standardization of attributes in future versions.

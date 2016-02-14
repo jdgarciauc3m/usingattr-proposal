@@ -1,0 +1,20 @@
+\section{Introduction}
+
+This paper tries to clarify the use of attributes namespaces. In particular,
+it tries to answer the following questions:
+
+\begin{itemize}
+\item What happens if an implementation finds a reference to an attribute namespace
+      that it does not know about?
+
+\item What happens if an implementation finds a reference to an unqualified
+attribute which is not defined in the standard?
+
+\end{itemize}
+
+Attributes~\cite{n2761} provide a useful way to add annotations to source code
+with implementation defined effects. Implementations are expected to add their
+own attribute namespace where their attributes are defined. In fact, scoped
+attributes ---those under a specific namespace--- are specified as
+conditionally supported. This approach provides a clean way for different
+implementations to add their own attributes.
