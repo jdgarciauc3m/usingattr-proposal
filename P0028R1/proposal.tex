@@ -17,11 +17,11 @@ void g() {
 }
 \end{lstlisting}
 
-In this paper we have named the proposed introducer \cppkey{using} for the similarity to using directives. However,
+In this paper we have named the proposed introducer \cppid{using} for the similarity to using directives. However,
 this choice is for exposition only and a different name could be used. Possible alternates introducers could be:
-\cppkey{namespace},
-\cppkey{use},
-\cppkey{with}.
+\cppid{namespace},
+\cppid{use},
+\cppid{with}.
 
 \subsection{Effect of the using introducer}
 
@@ -38,7 +38,7 @@ void g() {
 
 \subsection{Name lookup}
 
-The introduction of the \cppkey{using} introducer requires additional
+The introduction of the \cppid{using} introducer requires additional
 rules when an attribute specifier is seen. 
 
 If an attribute specifier contains a non-scoped attribute name, it is
@@ -47,7 +47,7 @@ the attribute lookup is finished.
 
 If a non-scoped attribute is a non-standard attribute, it is checked
 against the attribute name lists of all the attribute namespaces that have been
-introduced through an \cppkey{using} introducer. The outcome of this process
+introduced through an \cppid{using} introducer. The outcome of this process
 could be one of the following:
 
 \begin{enumerate}
