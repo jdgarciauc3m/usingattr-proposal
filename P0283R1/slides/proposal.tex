@@ -1,0 +1,39 @@
+\begin{frame}[t]{Proposal: Unknown attributes namespace}
+\begin{itemize}
+  \item Clarify more what an implementation can do when it finds an attribute namespace
+        it does not know about.
+
+  \vfill
+  \item Propose to add:
+    \begin{itemize}
+      \item 
+\emph{All occurrences of an attribute namespace that is not conditionally supported
+by the implementation will be ignored}.
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[t]{Proposal: Non-standard unqualified attributes}
+\begin{itemize}
+  \item Avoid that implementation have freedom to add attributes to global namespace.
+    \begin{itemize}
+      \item Deprecate attributes in global namespace.
+      \item Make namespace based attributes implementation defined.
+    \end{itemize}
+  
+  \vfill
+  \item Propose to modify 7.6.1/5
+    \begin{itemize}
+      \item 
+\emph{Any occurrence of an attribute-token not specified in this International
+Standard is deprecated}.
+    \end{itemize}
+  \vfill
+  \item Propose to add:
+    \begin{itemize}
+      \item 
+\emph{For an attribute-scoped-token not specified in this International
+Standard, the behavior is implementation-defined.}
+    \end{itemize}
+\end{itemize}
+\end{frame}

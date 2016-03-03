@@ -1,0 +1,16 @@
+\begin{frame}[t,fragile]{Questions to answer}
+\begin{itemize}
+  \item What happens if an implementation finds a reference to an 
+        attribute namespace that it does not know about?
+
+\begin{lstlisting}
+[[rpr::kernel]] // Conditionally supported
+\end{lstlisting}
+
+  \item What happens if an implementation finds a reference to an 
+        unqualified attribute which is not defined in the standard?
+\begin{lstlisting}
+[[kernel]] // Implementation defined
+\end{lstlisting}
+\end{itemize}
+\end{frame}

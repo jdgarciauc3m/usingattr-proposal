@@ -1,0 +1,43 @@
+\begin{frame}[t]{Unknown attribute namespaces}
+\begin{itemize}
+  \item \emph{''We don't have a requirement that implementations ignore
+attribute namespaces that they do not understand. So my users hide attributes
+behind macros''}.
+
+  \vfill
+  \item Current status:
+    \begin{itemize}
+      \item 7.6.1/3: \emph{``The use of an attribute-scoped-token is
+conditionally-supported, with implementation-defined behavior''} 
+    \end{itemize}
+
+  \vfill
+  \item But an implementation may not understand a namespace it does not know about.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[t]{Non-standard unqualified attributes}
+\begin{itemize}
+  \item Current status:
+    \begin{itemize}
+      \item 7.6.1/5: \emph{``For an attribute-token
+      not specified in this International Standard, the behavior is
+      implementation-defined''}
+    \end{itemize}
+ 
+  \vfill
+  \item May lead to implementations to add their own attributes in the global namespace.
+
+  \vfill\pause
+  \item Use case:
+    \begin{itemize}
+      \item Allows a compiler
+to support in a previous mode an attribute added in a newer version. 
+      \item For example
+supporting in C++11 mode an attribute that was added for C++14. 
+      \item While, this is an
+interesting use, it can be done as a non-conforming extension.
+
+    \end{itemize}
+\end{itemize}
+\end{frame}
