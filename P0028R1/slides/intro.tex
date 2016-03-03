@@ -1,0 +1,25 @@
+\begin{frame}[t,fragile]{Understanding attributes}
+\begin{itemize}
+  \item Useful and powerful mean to annotate source code.
+    \begin{itemize}
+      \item Implementation defined effects
+    \end{itemize}
+\begin{lstlisting}
+[[deprecated]]
+void f();
+\end{lstlisting}
+
+  \vfill\pause
+  \item Implementations expected to add their own attribute namespace.
+    \begin{itemize}
+      \item Scoped attributes are specified to be conditionally supported.
+    \end{itemize}
+\begin{lstlisting}
+[[omp::parallel]]
+{
+  f();
+  g();
+}
+\end{lstlisting}
+\end{itemize}
+\end{frame}

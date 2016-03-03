@@ -1,0 +1,119 @@
+\begin{frame}[t,fragile]{Proposal}
+\begin{itemize}
+  \item New attribute to introduce an attribute namespace.
+    \begin{itemize}
+      \item Alternatives on scoping later.
+    \end{itemize}
+\end{itemize}
+
+\vfill
+\begin{lstlisting}
+// Current situation
+void f() {
+  [[rpr::kernel, rpr::target(cpu,gpu)]]
+  do_task();
+}
+
+// Proposed change
+void g() {
+  [[using rpr: kernel, target(cpu,gpu)]]
+  do_task();
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[t]{Some bikeshedding?}
+\begin{itemize}
+  \item \cppkey{[[namespace something:]]}
+  \item \cppkey{[[with something:]]}
+  \item \cppkey{[[use something:]]}
+  \item \cppkey{[[put\_your\_bikeshed\_here something:]]}
+  \item \ldots
+\end{itemize}
+\end{frame}
+
+\begin{frame}[t,fragile]{Effects}
+\begin{itemize}
+  \item The effect of a \cppid{using} introducer is to introduce all the attributes
+        names from a specific attribute namespace to the global attribute namespace.
+    \begin{itemize}
+      \item All the attributes from that namespace
+            can used without explicit mention to the namespace.
+    \end{itemize}
+\end{itemize}
+
+\begin{lstlisting}
+void g() {
+  [[using rpr: kernel, target(cpu)]] // equivalent to [[rpr::kernel, rpr::target(cpu)]]
+  do_task();
+
+  // ...
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[t,shrink]{Lookup}
+\begin{itemize}
+  \item Need rules to decide when an attribute specifier is seen to resolve the namespace
+        it belongs to.
+\end{itemize}
+\vfill\pause
+\begin{itemize}
+  \item If an attribute specifier contains a non-scoped attribute name.
+    \begin{enumerate}[1]
+      \item Check against list of standard attributes.
+      \item Check against valid attributes in attribute namespace brought to scope through \cppkey{using} introducer.
+    \end{enumerate}
+  \pause
+  \item Outcome:
+    \begin{enumerate}[a)]
+      \item Exactly one match $\Rightarrow$ Program is well formed.
+      
+      \item More than one match in different attribute namespaces
+      $\Rightarrow$
+      Effect is implementation defined. [some namespace could be not supported].
+      
+      \item Zero matches 
+      $\Rightarrow$
+      The attribute is ignored and the
+      program is well-formed, although a diagnostic may be optionally emitted.
+        \begin{itemize}
+          \item Alternatively, implementation defined.
+        \end{itemize}
+    \end{enumerate}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[t,fragile]{Scope of introducers}
+\begin{lstlisting}
+void f(X & x) {
+  [[rpr::kernel, rpr::target(gpu), rpr::out(x)]] g1(x); // OK
+
+  [[using rpr: kernel, target(gpu), out(x)]] g2(x); // OK
+
+  // Wrong. Target in different attribute list
+  [[using rpr: kernel]] [[target(gpu)]] g3(x); 
+}
+\end{lstlisting}
+
+\end{frame}
+
+\begin{frame}[t,fragile]{Original example}
+\begin{lstlisting}[basicstyle=\footnotesize]
+void f() {
+  [[using rpr: pipeline(bound, 8, blocking), stream(A,B)]]
+  for (int i=0; i<iterations; ++i) {
+    [[using rpr:, kernel, out(a), target(cpu) ]]
+    a = get_value();
+    
+    [[using rpr: farm(4,ordered), in(A,C), out(A,B), target(cpu,gpu)]]
+    for (int j=0;j<max;++j) {
+      b = f(a,c);
+    }
+
+    [[using rpr: kernel, in(A,B)]]
+    g(a,b);
+  }
+}
+\end{lstlisting}
+\end{frame}

@@ -1,0 +1,46 @@
+\begin{frame}[t,fragile]{Multiple scoped attributes }
+
+\begin{block}{Multiple attributes}
+\begin{lstlisting}[basicstyle=\scriptsize]
+void f() {
+  [[rpr::pipeline(bound, 8, blocking), rpr::stream(A,B)]]
+  for (int i=0; i<iterations; ++i) {
+
+    [[rpr::kernel, rpr::out(a), rpr::target(cpu) ]]
+    a = get_value();
+    
+    [[rpr::kernel, rpr::farm(4,ordered), rpr::in(A,C), rpr::out(A,B), rpr::target(cpu,gpu)]]
+    for (int j=0;j<max;++j) {
+      b = f(a,c);
+    }
+
+    [[rpr::kernel, rpr::in(A,B)]]
+    g(a,b);
+  }
+}
+\end{lstlisting}
+\end{block}
+\end{frame}
+
+\begin{frame}[t,fragile]{Problems}
+\begin{itemize}
+  \item Multiple attributes in a single annotation $\rightarrow$ verbosity.
+    \begin{itemize}
+      \item Need to repeat attribute namespace in front of every attribute.
+      \item Users want to avoid this.
+    \end{itemize}
+  \vfill\pause
+  \item Undesired alternative: combine multiple atributes in complex syntax.
+    \begin{itemize}
+      \item Moves all the complexities to the syntax of attribue parameters.
+      \item Difficult to read.
+      \item What about ordering of arguments? Optional arguments? \ldots
+    \end{itemize}
+\begin{lstlisting}[basicstyle=\scriptsize]
+  [[rpr::pipeline(bound, 8, blocking), rpr::stream(A,B)]]
+
+  [[rpr(pipeline(bound,8,blocking), stream(A,B))]]
+\end{lstlisting}
+\end{itemize}
+\end{frame}
+
