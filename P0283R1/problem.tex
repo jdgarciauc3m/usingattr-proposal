@@ -1,0 +1,34 @@
+\section{Problem}
+
+Attributes have proved to be a very useful way to perform
+source code annotations. However to increase their use some
+issues need to be better clarified.
+
+\subsection{Handling unknown attribute namespaces}
+
+During the committee meeting at Kona it was pointed out that \emph{``We don't
+have a requirement that implementations ignore attribute namespaces that they
+do not understand. So my users hide attributes behind macros''}. This is something
+that needs to be clarified in order to avoid attributes being hidden by macros.
+
+Currently, the standard states in 7.6.1/3 that \emph{``The use of an
+attribute-scoped-token is conditionally-supported, with implementation-defined
+behavior''}. Making namespaced attributes conditionally supported means that
+they will not be understood by implementations that do not cover that namespace.
+
+\subsection{Non standard unqualified attributes}
+
+Currently, the standard states in 7.6.1/5 that \emph{``For an attribute-token
+not specified in this International Standard, the behavior is
+implementation-defined''}. However this wording (combined with namespaces being
+conditionally supported) may lead to implementations to add non-standard attributes
+as extensions.
+
+In general, the current status quo favors the fact that different implementations
+pollute the global namespace with non-standard attributes in different ways, making
+very difficult standardization of attributes in future versions.
+
+It has been pointed out that being \emph{implementation-defined} allows a compiler
+to support in a previous mode an attribute added in a newer version. For example
+supporting in C++11 mode an attribute that was added for C++14. While, this is an
+interesting use, it can be done as a non-conforming extension.
