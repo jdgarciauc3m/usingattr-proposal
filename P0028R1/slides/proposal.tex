@@ -84,6 +84,22 @@ void g() {
 \end{itemize}
 \end{frame}
 
+\begin{frame}[t,fragile]{Simplification}
+\begin{itemize}
+  \item No lookup at all.
+  \item Only a single introducer in an attribute specifier.
+  \item All attributes in the attribute specifier as-if the were prefixed by introduced namespace.
+  \item Example:
+\begin{lstlisting}
+[[using ns1: at1, at2, at3]]
+\end{lstlisting}
+  \item Is equivalent to:
+\begin{lstlisting}
+[[ns1::at1, ns1::at2, ns1::at3]]
+\end{lstlisting}
+\end{itemize}
+\end{frame}
+
 \begin{frame}[t,fragile]{Scope of introducers}
 \begin{lstlisting}
 void f(X & x) {
