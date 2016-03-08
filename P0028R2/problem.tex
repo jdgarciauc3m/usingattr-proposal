@@ -1,0 +1,46 @@
+\section{Problem}
+
+Attributes have proved to be a very useful way to perform
+source code annotations. One example of this is the set
+of attributes~\cite{repara:d33} defined in the context of the \emph{REPARA}
+project (\url{http://www.repara-project.eu}).
+
+A simple example of such use is the annotation of computational
+kernels that can be later transformed to different
+programming models.
+
+\begin{lstlisting}
+void f() {
+  [[rpr::kernel]]
+  for (int i=0; i<iterations; ++i) {
+    do_something();
+  }
+}
+\end{lstlisting}
+
+However, in complex cases multiple attributes need to be
+used in a single annotation. This results in a verbosity
+that will make most implementations to look for very short
+attribute namespaces names.
+
+\begin{lstlisting}
+void f() {
+  [[rpr::pipeline(bound, 8, blocking), rpr::stream(A,B)]]
+  for (int i=0; i<iterations; ++i) {
+    [[rpr::kernel, rpr::out(a), rpr::target(cpu) ]]
+    a = get_value();
+    
+    [[rpr::kernel, rpr::farm(4,ordered), rpr::in(A,C), rpr::out(A,B), rpr::target(cpu,gpu)]]
+    for (int j=0;j<max;++j) {
+      b = f(a,c);
+    }
+
+    [[rpr::kernel, rpr::in(A,B)]]
+    g(a,b);
+  }
+}
+\end{lstlisting}
+
+An alternate solution could be to combine multiple attributes with a more
+complex syntax, but this would introduce complexities in the attribute
+syntax itself while making worse the ability to understand the annotations.

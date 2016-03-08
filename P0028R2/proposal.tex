@@ -1,0 +1,77 @@
+\section{Proposal}
+
+We propose a new attribute namespace introducer, to introduce an attribute
+namespace in the current attribute specifier.
+
+\begin{lstlisting}
+// Current situation
+void f() {
+  [[rpr::kernel, rpr::target(cpu,gpu)]]
+  do_task();
+}
+
+// Proposed change
+void g() {
+  [[using rpr: kernel, target(cpu,gpu)]]
+  do_task();
+}
+\end{lstlisting}
+
+\subsection{Effect of the using introducer}
+
+The effect of a \cppid{using} introducer is to introduce all the attributes
+names from a specific attribute namespace into the global attribute namespace.
+Thus, after a \cppid{using} attribute, all the attributes from that namespace
+can be used without explicit mention to the namespace.
+
+\begin{lstlisting}
+void g() {
+  [[using rpr: kernel]] // equivalent to [[rpr::kernel]]
+  do_task();
+\end{lstlisting}
+
+\subsection{Scope of the using introducer}
+\label{scoping}
+
+The effect of a \cppid{using} introducer is limited to the attribute list
+where it appears.
+
+\begin{lstlisting}
+void f(X & x) {
+  [[rpr::kernel, rpr::target(gpu), rpr::out(x)]] g1(x); // OK
+  [[using rpr: kernel, target(gpu), out(x)]] g2(x); // OK
+  [[using rpr: kernel]] [[target(gpu)]] g3(x); // Wrong. Target in different attr-list
+}
+\end{lstlisting}
+
+\subsection{Simplified rules}
+
+Instead of introducing complex lookup rules (as in~\cite{p0082r1}) we propose
+a simplified set of rules:
+
+
+Only a single attribute namespace introducer may be used within an attribute
+specifier.
+
+\begin{lstlisting}
+[[using ns1: at1, at2, using ns2: at3]] // Ill-formed
+\end{lstlisting}
+
+
+All attributes in an atrribute specifier containing a namespace introducer are
+interpreted as if every attribute in that attribute specifier was prefiexed by
+the introduced namespace.
+
+Thus the following specifier:
+
+\begin{lstlisting}
+[[using ns1: at1, at2, at3]]
+\end{lstlisting}
+
+is equivalent to:
+
+\begin{lstlisting}
+[[ns1::at1, ns1::at2, ns1::at3]]
+\end{lstlisting}
+
+
